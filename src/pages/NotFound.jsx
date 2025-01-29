@@ -1,6 +1,7 @@
 import React from "react";
-import { Result, Button } from "antd";
+import { Result } from "antd";
 import { useNavigate } from "react-router-dom";
+import CustomButton from "../components/CustomButton";
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -12,13 +13,13 @@ const NotFound = () => {
         title="404"
         subTitle="Sorry, the page you visited does not exist."
         extra={
-          <Button
+          <CustomButton
             type="primary"
             className="bg-blue-500 hover:bg-blue-600 text-white"
             onClick={() => navigate("/")}
           >
             Back Home
-          </Button>
+          </CustomButton>
         }
       />
     </div>

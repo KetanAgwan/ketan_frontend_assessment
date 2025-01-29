@@ -3,12 +3,16 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
+import { ApiProvider } from "@reduxjs/toolkit/query/react";
+import { domainApi } from "./api/domain_api/domainSlice";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <ApiProvider api={domainApi}>
+        <App />
+      </ApiProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
