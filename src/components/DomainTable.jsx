@@ -4,6 +4,9 @@ import {
   ExportOutlined,
   MoreOutlined,
 } from "@ant-design/icons";
+
+import { IoOpenOutline } from "react-icons/io5";
+
 import { Dropdown, Popconfirm, Row, Space, Table } from "antd";
 import React from "react";
 import { sortByCreatedDate } from "../utils/sort";
@@ -33,14 +36,19 @@ const DomainTable = ({
       dataIndex: "domain",
       key: "domain",
       render: (url, record) => (
-        <a href={url} target="_blank" rel="noreferrer ">
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-start"
+        >
           {record.isActive ? (
             <CheckCircleFilled className="text-green-500 mr-3" />
           ) : (
             <ExclamationCircleOutlined className="text-red-500 mr-3" />
           )}
           <span>{url}</span>
-          <ExportOutlined className="text-[12px] ml-3 text-gray-400" />
+          <IoOpenOutline className="text-[13px] inline ml-3 text-gray-400" />
         </a>
       ),
     },
