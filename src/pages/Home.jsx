@@ -10,6 +10,7 @@ import {
   useUpdateDomainMutation,
 } from "../api/domain_api/domainSliceApi";
 import DomainTable from "../components/DomainTable";
+import { debounce } from "../utils/search";
 
 const { Title } = Typography;
 
@@ -60,6 +61,8 @@ const Home = () => {
   const [domainData, setDomainData] = useState(null);
 
   // Handle alerts for different mutations
+
+  //   for delete mutation
   useEffect(() => {
     if (isDeleteSuccess || isErrorWhileDeleting) {
       setShowDeleteAlert(true);
@@ -68,6 +71,7 @@ const Home = () => {
     }
   }, [isDeleteSuccess, isErrorWhileDeleting]);
 
+  //   for create mutation
   useEffect(() => {
     if (isCreateSuccess || isCreateError) {
       setShowCreateAlert(true);
@@ -76,6 +80,7 @@ const Home = () => {
     }
   }, [isCreateSuccess, isCreateError]);
 
+  //   for update mutation
   useEffect(() => {
     if (isUpdateSuccess || isUpdateError) {
       setShowUpdateAlert(true);
@@ -84,6 +89,7 @@ const Home = () => {
     }
   }, [isUpdateSuccess, isUpdateError]);
 
+  //   for error mutation
   useEffect(() => {
     if (fetchedData.isError) {
       setShowErrorAlert(true);
@@ -92,19 +98,24 @@ const Home = () => {
     }
   }, [fetchedData.isError]);
 
+  //   for show drawer
   const showDrawer = (domainData = null) => {
     setDomainData(domainData);
     setOpenDrawer(true);
   };
 
+  //   for close drawer
   const closeDrawer = () => {
     setOpenDrawer(false);
     setDomainData(null);
   };
 
+  // search function
   const onSearch = (value) => {
     setSearchQuery(value);
   };
+  // debounce instance for search
+  const debouncedSearch = debounce(onSearch, 500);
 
   // Filter options
   const options = [
@@ -112,7 +123,7 @@ const Home = () => {
     { value: "desc", label: "Order by Descending" },
   ];
 
-  // Modified renderAlert to use specific alert states
+  //   for render the alert
   const renderAlert = (visible, message, type) => {
     return visible ? (
       <Alert
@@ -128,13 +139,13 @@ const Home = () => {
     <Row className="px-2 md:px-2 lg:px-5" gutter={[16, 24]}>
       {/* Title */}
       <Col span={24}>
-        <Title level={2} className="mb-0">
+        <Title level={2} className="!mb-0 !font-normal">
           Domains
         </Title>
       </Col>
 
       {/* Button, Select, and Search Row */}
-      <Col span={24}>
+      <Col span={24} >
         <Row
           gutter={[16, 16]}
           className="w-full pr-0 !m-0"
@@ -171,7 +182,7 @@ const Home = () => {
             <Col className="!p-0" xs={24} md={8} lg={6}>
               <Select
                 defaultValue="Order by Ascending"
-                className="w-full"
+                className="custom-select w-full"
                 onChange={(value) =>
                   setSortType(value === "asc" ? "asc" : "desc")
                 }
@@ -186,7 +197,8 @@ const Home = () => {
                 addonBefore={<SearchOutlined />}
                 placeholder="input search text"
                 allowClear
-                onKeyUp={(e) => onSearch(e.target.value)}
+                onChange={(e) => debouncedSearch(e.target.value)}
+                onClear={() => debouncedSearch("")}
                 size="large"
                 className="w-full custom-input-with-transparent-addon"
               />
@@ -196,6 +208,7 @@ const Home = () => {
       </Col>
 
       <Col span={24}>
+        {/* Alerts  */}
         <div
           className={`w-full mx-auto mt-5 overflow-hidden transition-all duration-500 ease-in-out 
           ${
@@ -240,6 +253,7 @@ const Home = () => {
           )}
         </div>
 
+        {/* domain table  */}
         <DomainTable
           fetchedData={fetchedData}
           sortType={sortType}
@@ -249,6 +263,8 @@ const Home = () => {
           isDeleting={isDeleting}
           searchQuery={searchQuery}
           updateDomain={updateDomain}
+          isUpdating={isUpdating}
+          pageSize={10}
         />
       </Col>
     </Row>

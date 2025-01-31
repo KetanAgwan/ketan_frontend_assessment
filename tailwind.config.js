@@ -2,7 +2,11 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      borderRadius: {
+        "global-border-radius": "var(--global-border-radius)",
+      },
+    },
   },
   plugins: [],
 };

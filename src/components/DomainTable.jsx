@@ -1,13 +1,16 @@
 import {
   CheckCircleFilled,
+  ExclamationCircleOutlined,
   ExportOutlined,
-  InfoCircleOutlined,
   MoreOutlined,
 } from "@ant-design/icons";
-import { Dropdown, Popconfirm, Row, Space, Table, Tag } from "antd";
+import { Dropdown, Popconfirm, Row, Space, Table } from "antd";
 import React from "react";
 import { sortByCreatedDate } from "../utils/sort";
 import { filterDomainsBySearch } from "../utils/search";
+import { Typography } from "antd";
+
+const { Text } = Typography;
 
 const DomainTable = ({
   fetchedData,
@@ -17,24 +20,27 @@ const DomainTable = ({
   sortType,
   searchQuery,
   updateDomain,
+  isUpdating,
+  pageSize,
 }) => {
   //accesing the states of the mutation hooks
   const { data: domainList, isLoading, isError } = fetchedData;
 
+  //   columns for the table
   const columns = [
     {
       title: "Domain url",
       dataIndex: "domain",
       key: "domain",
       render: (url, record) => (
-        <a href={url} target="_blank" rel="noreferrer">
-          {!record.isActive ? (
-            <InfoCircleOutlined className="text-red-500 mr-2" />
+        <a href={url} target="_blank" rel="noreferrer ">
+          {record.isActive ? (
+            <CheckCircleFilled className="text-green-500 mr-3" />
           ) : (
-            <CheckCircleFilled className="text-green-500 mr-2" />
+            <ExclamationCircleOutlined className="text-red-500 mr-3" />
           )}
-          {url}
-          <ExportOutlined className="text-[12px] ml-2 opacity-70" />
+          <span>{url}</span>
+          <ExportOutlined className="text-[12px] ml-3 text-gray-400" />
         </a>
       ),
     },
@@ -44,9 +50,11 @@ const DomainTable = ({
       key: "isActive",
       render: (_, record) => (
         <Space size="middle">
-          <Tag color={record.isActive ? "green" : "red"}>
-            {record.isActive ? "Active" : "Inactive"}
-          </Tag>
+          {record.isActive ? (
+            <Text type="success">Active</Text>
+          ) : (
+            <Text type="danger">Not Active</Text>
+          )}
         </Space>
       ),
     },
@@ -57,11 +65,11 @@ const DomainTable = ({
       render: (_, record) => (
         <Space size="middle">
           {record.status === "verified" ? (
-            <Tag color="green">Verified</Tag>
+            <Text type="success">Verified</Text>
           ) : record.status === "pending" ? (
-            <Tag color="yellow">Pending</Tag>
+            <Text type="warning">Pending</Text>
           ) : record.status === "rejected" ? (
-            <Tag color="red">Rejected</Tag>
+            <Text type="danger">Rejected</Text>
           ) : null}
         </Space>
       ),
@@ -147,7 +155,8 @@ const DomainTable = ({
     <>
       {/* Table */}
       <Table
-        className="w-full mt-2"
+        bordered
+        className="custom-table global-border-radius w-full mt-2"
         columns={columns || []}
         dataSource={sortByCreatedDate(
           filterDomainsBySearch(domainList || [], searchQuery),
@@ -158,7 +167,7 @@ const DomainTable = ({
           emptyText: isError ? "Failed to load data" : "No data available",
         }}
         pagination={{
-          pageSize: 10,
+          pageSize: pageSize,
           size: "small",
           showSizeChanger: false,
         }}

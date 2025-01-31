@@ -1,3 +1,4 @@
+//   filter the domains by search
 export const filterDomainsBySearch = (array, searchTerm = "") => {
   if (!array) return [];
 
@@ -8,3 +9,13 @@ export const filterDomainsBySearch = (array, searchTerm = "") => {
     return domain.includes(searchTerm.toLowerCase());
   });
 };
+
+//   debounce function
+export const debounce = (func, delay) => {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func.apply(this, args), delay);
+    };
+  }
+  

@@ -41,9 +41,20 @@
 
 .custom-input-with-transparent-addon .ant-input-group-addon {
   background-color: transparent !important;
+  border-radius: var(--global-border-radius) !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
   border-right: none !important;
+  color: #282c3490;
 }
 
 .custom-input-with-transparent-addon .ant-input {
+  border-radius: var(--global-border-radius) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
   border-left: none !important;
+}
+
+.custom-select .ant-select-selector {
+  border-radius: var(--global-border-radius) !important;
 }
