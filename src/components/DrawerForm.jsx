@@ -17,9 +17,11 @@ const DrawerForm = ({
   createDomain,
   updateDomain,
 }) => {
+  // form state
   const [form] = Form.useForm();
   const [isFormChanged, setIsFormChanged] = useState(false);
 
+  // useEffect to set the form values
   useEffect(() => {
     if (openDrawer) {
       if (domainData) {
@@ -40,6 +42,7 @@ const DrawerForm = ({
     }
   }, [domainData, openDrawer, form]);
 
+  // function to check if the form values have changed
   const onValuesChange = () => {
     if (domainData) {
       const currentValues = form.getFieldsValue();
@@ -56,6 +59,7 @@ const DrawerForm = ({
     }
   };
 
+  // function to handle the domain submit
   const onFinish = async (values) => {
     const createdDate = Math.floor(Date.now() / 1000);
     const fullDomain = `${values.protocol}${values.domain}`;

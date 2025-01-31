@@ -137,21 +137,18 @@ const Home = () => {
 
   return (
     <Row className="px-2 md:px-2 lg:px-5" gutter={[16, 24]}>
-      {/* Title */}
       <Col span={24}>
         <Title level={2} className="!mb-0 !font-normal">
           Domains
         </Title>
       </Col>
 
-      {/* Button, Select, and Search Row */}
       <Col span={24} >
         <Row
           gutter={[16, 16]}
           className="w-full pr-0 !m-0"
           style={{ display: "flex", flexWrap: "wrap" }}
         >
-          {/* Button Column */}
           <Col className="!p-0" xs={24} md={6} lg={6}>
             <CustomButton
               type="primary"
@@ -173,12 +170,10 @@ const Home = () => {
             />
           </Col>
 
-          {/* Select and Search Columns Wrapper */}
           <Col
             {...{ xs: 24, md: 18, lg: 18 }}
             className="flex justify-end flex-wrap gap-4 xs:mt-4 md:mt-0 !p-0"
           >
-            {/* Select Column */}
             <Col className="!p-0" xs={24} md={8} lg={6}>
               <Select
                 defaultValue="Order by Ascending"
@@ -191,7 +186,6 @@ const Home = () => {
               />
             </Col>
 
-            {/* Search Column */}
             <Col className="!p-0" xs={24} md={12} lg={10}>
               <Input
                 addonBefore={<SearchOutlined />}
@@ -208,7 +202,6 @@ const Home = () => {
       </Col>
 
       <Col span={24}>
-        {/* Alerts  */}
         <div
           className={`w-full mx-auto mt-5 overflow-hidden transition-all duration-500 ease-in-out 
           ${
@@ -253,7 +246,6 @@ const Home = () => {
           )}
         </div>
 
-        {/* domain table  */}
         <DomainTable
           fetchedData={fetchedData}
           sortType={sortType}

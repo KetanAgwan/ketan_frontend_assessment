@@ -1,3 +1,5 @@
+
+// function to handle the domain submit
 export const handleDomainSubmit = async (
     values,
     domainData,

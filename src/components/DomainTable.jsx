@@ -153,7 +153,6 @@ const DomainTable = ({
 
   return (
     <>
-      {/* Table */}
       <Table
         bordered
         className="custom-table global-border-radius w-full mt-2"
