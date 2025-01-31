@@ -3,7 +3,7 @@ import React from "react";
 
 const CustomButton = ({ children, ...props }) => {
   return (
-    <Button className="px-5 py-5 border" {...props}>
+    <Button size="middle" className="px-5 py-5" {...props}>
       {children}
     </Button>
   );

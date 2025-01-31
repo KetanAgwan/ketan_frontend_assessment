@@ -1,43 +1,100 @@
-import React from "react";
-import { Button, Col, Drawer, Form, Input, Row, Select, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { Col, Drawer, Form, Input, Row, Select, Space } from "antd";
 import CustomButton from "./CustomButton";
-import { validateUrlStructure } from "../utils/validateUrl";
+import {
+  extractProtocolAndDomain,
+  validateUrlStructure,
+} from "../utils/validateUrl";
+
 const { Option } = Select;
 
-const DrawerForm = ({ open, onClose }) => {
+const DrawerForm = ({
+  openDrawer,
+  closeDrawer,
+  domainData,
+  isCreating,
+  isUpdating,
+  createDomain,
+  updateDomain,
+}) => {
   const [form] = Form.useForm();
+  const [isFormChanged, setIsFormChanged] = useState(false);
 
-  const onFinish = (values) => {
+  useEffect(() => {
+    if (openDrawer) {
+      if (domainData) {
+        const { protocol, domain } = extractProtocolAndDomain(
+          domainData?.domain || ""
+        );
+        form.setFieldsValue({
+          protocol,
+          domain,
+          status: domainData.status,
+          isActive: domainData.isActive,
+        });
+        setIsFormChanged(false);
+      } else {
+        form.resetFields();
+        setIsFormChanged(true);
+      }
+    }
+  }, [domainData, openDrawer, form]);
+
+  const onValuesChange = () => {
+    if (domainData) {
+      const currentValues = form.getFieldsValue();
+      const { protocol: currentProtocol, domain: currentDomain } =
+        extractProtocolAndDomain(domainData?.domain || "");
+
+      const isChanged =
+        currentValues.protocol !== currentProtocol ||
+        currentValues.domain !== currentDomain ||
+        currentValues.status !== domainData.status ||
+        currentValues.isActive !== domainData.isActive;
+
+      setIsFormChanged(isChanged);
+    }
+  };
+
+  const onFinish = async (values) => {
     const createdDate = Math.floor(Date.now() / 1000);
-
-    // Concatenate protocol and domain
     const fullDomain = `${values.protocol}${values.domain}`;
     const { protocol, ...rest } = values;
 
-    const formData = {
-      ...rest,
-      createdDate,
-      domain: fullDomain, // Add the concatenated domain
-    };
+    const formData = { ...rest, domain: fullDomain };
 
-    console.log("Form Data:", formData);
-    onClose();
+    let response;
+    if (domainData) {
+      response = await updateDomain({ id: domainData.id, ...formData });
+    } else {
+      response = await createDomain({ ...formData, createdDate });
+    }
+
+    if (response.data) {
+      form.resetFields();
+      closeDrawer();
+    }
+    if (response.error) {
+      form.resetFields();
+      closeDrawer();
+    }
   };
 
   return (
     <Drawer
-      title="Create a new domain"
+      title={domainData ? "Update domain" : "Create a new domain"}
       width={window.innerWidth < 768 ? "90%" : 720}
-      onClose={onClose}
-      open={open}
-      styles={{
-        body: {
-          paddingBottom: 80,
-        },
-      }}
+      onClose={closeDrawer}
+      open={openDrawer}
+      styles={{ body: { paddingBottom: 80 } }}
     >
-      <Form form={form} layout="vertical" hideRequiredMark onFinish={onFinish}>
-        {/* Hidden field for createdDate */}
+      <Form
+        form={form}
+        name="drawerForm"
+        layout="vertical"
+        onFinish={onFinish}
+        onValuesChange={onValuesChange}
+      >
         <Form.Item name="createdDate" hidden>
           <Input type="hidden" />
         </Form.Item>
@@ -48,10 +105,7 @@ const DrawerForm = ({ open, onClose }) => {
               name="domain"
               label="Domain"
               rules={[
-                {
-                  required: true,
-                  message: "Please enter the domain",
-                },
+                { required: true, message: "Please enter the domain" },
                 {
                   validator: async (_, value) => {
                     if (!value) return Promise.resolve();
@@ -80,24 +134,18 @@ const DrawerForm = ({ open, onClose }) => {
                   </Form.Item>
                 }
                 placeholder="Please enter the domain"
-                onBlur={(e) => {
-                  form.validateFields(["domain"]);
-                }}
+                onBlur={() => form.validateFields(["domain"])}
               />
             </Form.Item>
           </Col>
         </Row>
+
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item
               name="status"
-              label="Status"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select the status",
-                },
-              ]}
+              label="Verification status"
+              rules={[{ required: true, message: "Please select the status" }]}
             >
               <Select placeholder="Please select the status">
                 <Option value="pending">Pending</Option>
@@ -107,16 +155,14 @@ const DrawerForm = ({ open, onClose }) => {
             </Form.Item>
           </Col>
         </Row>
+
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item
               name="isActive"
-              label="Is Active"
+              label="Active status"
               rules={[
-                {
-                  required: true,
-                  message: "Please select the active status",
-                },
+                { required: true, message: "Please select the active status" },
               ]}
             >
               <Select placeholder="Please select the active status">
@@ -126,11 +172,17 @@ const DrawerForm = ({ open, onClose }) => {
             </Form.Item>
           </Col>
         </Row>
-        <Row>
+
+        <Row className="px-2">
           <Space>
-            <CustomButton onClick={onClose}>Cancel</CustomButton>
-            <CustomButton onClick={() => form.submit()} type="primary">
-              Submit
+            <CustomButton onClick={closeDrawer}>Cancel</CustomButton>
+            <CustomButton
+              onClick={() => form.submit()}
+              loading={domainData ? isUpdating : isCreating}
+              type="primary"
+              disabled={domainData && !isFormChanged}
+            >
+              {domainData ? "Update" : "Submit"}
             </CustomButton>
           </Space>
         </Row>

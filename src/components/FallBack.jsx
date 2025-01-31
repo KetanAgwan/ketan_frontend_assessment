@@ -8,7 +8,7 @@ export const FallBack = () => {
       justify="center"
       align="middle"
     >
-      <Spin size="large" />
+      <Spin size="large" tip="Loading..." />
     </Row>
   );
 };

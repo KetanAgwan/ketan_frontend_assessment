@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+/* search input filed  css  */
+
+.custom-input-with-transparent-addon .ant-input-group-addon {
+  background-color: transparent !important;
+  border-right: none !important;
+}
+
+.custom-input-with-transparent-addon .ant-input {
+  border-left: none !important;
+}

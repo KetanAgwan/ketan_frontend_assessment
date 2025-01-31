@@ -1,10 +1,20 @@
-export const sortDomains = (domains, sortType) => {
-  return domains?.sort((a, b) => {
-    const domainA = new URL(a.domain).hostname.toLowerCase();
-    const domainB = new URL(b.domain).hostname.toLowerCase();
-
-    return sortType === "asc"
-      ? domainA.localeCompare(domainB)
-      : domainB.localeCompare(domainA);
-  });
-};
+export const sortByCreatedDate = (array, sortType = "asc") => {
+    if (!array) return [];
+    
+    // Create a copy of the array using slice() to avoid mutation
+    const sortedArray = [...array];
+    
+    return sortedArray.sort((a, b) => {
+      const dateA = a.createdDate;
+      const dateB = b.createdDate;
+  
+      if (sortType === "asc") {
+        return dateA - dateB;
+      } else if (sortType === "desc") {
+        return dateB - dateA;
+      } else {
+        return 0;  // Default case if sortType is invalid
+      }
+    });
+  };
+  

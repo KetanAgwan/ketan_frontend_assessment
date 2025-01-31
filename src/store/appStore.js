@@ -3,7 +3,7 @@ import { domainApi } from "../api/domain_api/domainSlice";
 
 const appStore = configureStore({
   reducer: {
-    [domainApi.reducerPath]: domainApi.reducer,
+    domains: domainApi.reducer,
   },
 });
 

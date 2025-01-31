@@ -1,29 +1,25 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import {
   CheckCircleFilled,
-  DownOutlined,
   ExportOutlined,
   InfoCircleOutlined,
+  MoreOutlined,
 } from "@ant-design/icons";
-import { Alert, Dropdown, Popconfirm, Row, Space, Table, Tag } from "antd";
-import React, { useEffect, useState } from "react";
-import { useGetDomainsQuery } from "../api/domain_api/domainSlice";
-import { sortDomains } from "../utils/sort";
+import { Dropdown, Popconfirm, Row, Space, Table, Tag } from "antd";
+import React from "react";
+import { sortByCreatedDate } from "../utils/sort";
+import { filterDomainsBySearch } from "../utils/search";
 
-const CustomeTable = () => {
-  const [visible, setVisible] = useState(false); // State to control alert visibility
-  const { data: domainList, isLoading, isError, error } = useGetDomainsQuery();
-
-  // Show alert when there's an error
-  useEffect(() => {
-    if (isError) {
-      setVisible(true); // Slide in the alert
-      const timer = setTimeout(() => {
-        setVisible(false); // Slide out the alert after 3 seconds
-      }, 3000);
-      return () => clearTimeout(timer); // Cleanup timer
-    }
-  }, [isError]);
+const DomainTable = ({
+  fetchedData,
+  showDrawer,
+  deleteDomain,
+  isDeleting,
+  sortType,
+  searchQuery,
+  updateDomain,
+}) => {
+  //accesing the states of the mutation hooks
+  const { data: domainList, isLoading, isError } = fetchedData;
 
   const columns = [
     {
@@ -31,13 +27,14 @@ const CustomeTable = () => {
       dataIndex: "domain",
       key: "domain",
       render: (url, record) => (
-        <a href="#">
+        <a href={url} target="_blank" rel="noreferrer">
           {!record.isActive ? (
             <InfoCircleOutlined className="text-red-500 mr-2" />
           ) : (
             <CheckCircleFilled className="text-green-500 mr-2" />
           )}
-          {url} <ExportOutlined className="text-[12px] ml-2 opacity-70" />
+          {url}
+          <ExportOutlined className="text-[12px] ml-2 opacity-70" />
         </a>
       ),
     },
@@ -72,36 +69,53 @@ const CustomeTable = () => {
     {
       title: "",
       key: "options",
-      render: (_id, record) => {
+      render: (_, record) => {
         const dropdownItems = [
           {
             label: "Edit details",
             key: "1",
             onClick: () => {
-              //   handleEditProjectFile(record); //call the edit function function
+              showDrawer(record);
+            },
+          },
+          {
+            label:
+              record.status === "verified"
+                ? "Unverify domain"
+                : "Verify domain",
+            key: "2",
+            onClick: () => {
+              if (record.status === "verified") {
+                updateDomain({ id: record.id, status: "pending" });
+              } else {
+                updateDomain({ id: record.id, status: "verified" });
+              }
             },
           },
           {
             label: (
               <Popconfirm
                 title="Delete domain"
-                description="Are you sure to delete this domain"
-                onConfirm={() => {
-                  //   deleteHousePlanHandler(_id); // call delete function
-                }}
+                description="Are you sure to delete this domain?"
+                onConfirm={() => deleteDomain(record.id)}
                 okText="Yes"
                 cancelText="No"
+                okButtonProps={{
+                  loading: isDeleting,
+                }}
               >
                 <p
                   style={{
                     opacity: 1,
+                    height: "100%",
+                    width: "100%",
                   }}
                 >
                   Delete
                 </p>
               </Popconfirm>
             ),
-            key: "2",
+            key: "3",
             danger: true,
           },
         ];
@@ -113,17 +127,15 @@ const CustomeTable = () => {
                 items: dropdownItems,
               }}
               trigger={["click"]}
+              placement="bottomRight"
             >
-              <a onClick={(e) => e.preventDefault()}>
-                <Space>
-                  <p> Actions</p>
-                  <DownOutlined
-                    style={{
-                      fontSize: "0.8rem",
-                    }}
-                  />
-                </Space>
-              </a>
+              <Space className="cursor-pointer">
+                <MoreOutlined
+                  style={{
+                    fontSize: "0.8rem",
+                  }}
+                />
+              </Space>
             </Dropdown>
           </Row>
         );
@@ -133,35 +145,21 @@ const CustomeTable = () => {
 
   return (
     <>
-      <div
-        className={`w-full mx-auto mt-5 overflow-hidden transition-all duration-500 ease-in-out 
-                  ${
-                    visible ? "max-h-40 opacity-100" : "max-h-0 opacity-0 mt-0"
-                  }`}
-      >
-        {error && (
-          <Alert
-            message={`Error: ${error.status}`}
-            description={error.data}
-            type="error"
-            showIcon
-            className="w-full rounded-md shadow-lg py-3 px-2"
-          />
-        )}
-      </div>
-
       {/* Table */}
       <Table
-        className="w-full mt-10"
+        className="w-full mt-2"
         columns={columns || []}
-        dataSource={domainList || []} //here we will be sorting the domains
+        dataSource={sortByCreatedDate(
+          filterDomainsBySearch(domainList || [], searchQuery),
+          sortType
+        )}
         loading={isLoading}
         locale={{
           emptyText: isError ? "Failed to load data" : "No data available",
         }}
         pagination={{
           pageSize: 10,
-          size: "default",
+          size: "small",
           showSizeChanger: false,
         }}
         scroll={{
@@ -172,4 +170,4 @@ const CustomeTable = () => {
   );
 };
 
-export default CustomeTable;
+export default DomainTable;

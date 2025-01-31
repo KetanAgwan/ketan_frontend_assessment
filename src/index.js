@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ApiProvider } from "@reduxjs/toolkit/query/react";
-import { domainApi } from "./api/domain_api/domainSlice";
+import { domainApi } from "./api/domain_api/domainSliceApi";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

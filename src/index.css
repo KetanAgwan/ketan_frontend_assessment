@@ -15,3 +15,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* container css  */
+
+.ant-row,
+.ant-col {
+  padding: 5 !important;
+  margin: 0 !important;
+}
